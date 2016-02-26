@@ -29,6 +29,13 @@ public abstract class PathHelper {
         return path.substring(0, path.lastIndexOf("/"));
     }
 
+    /**
+     * 获取某个具体的job的path
+     * @param jobParentPath
+     * @param group
+     * @param name
+     * @return
+     */
     public static String getJobPath(String jobParentPath, String group , String name) {
         AssertHelper.notNull(jobParentPath, "jobParentPath can't be null.");
         AssertHelper.notNull(group, "group can't be null.");

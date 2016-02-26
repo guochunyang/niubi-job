@@ -19,6 +19,9 @@ package com.zuoxiaolong.niubi.job.api.curator;
 import com.zuoxiaolong.niubi.job.api.MasterSlavePathApi;
 
 /**
+ * 这个class主要是规定zookeeper中job和node的路径
+ * 所有的job都挂在 /jobs/xxx下面 而且创建的都是有序的持久化结点
+ * 所有的node挂在 /nodes/child下面 创建的是临时的有序结点
  * @author Xiaolong Zuo
  * @since 0.9.3
  */

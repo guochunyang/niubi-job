@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * AbstractCurdApiImpl 主要是封装了zookeeper客户端curator的一些常见操作
+ * 例如创建结点、删除结点、获取子节点数据等，目的是是操作更加简化
  * @author Xiaolong Zuo
  * @since 0.9.3
  */
@@ -59,6 +61,11 @@ public abstract class AbstractCurdApiImpl {
         return masterSlavePathApi;
     }
 
+    /**
+     * 返回path 的子节点信息 转化成 ChildData 格式
+     * @param path
+     * @return
+     */
     protected List<ChildData> getChildren(String path) {
         try {
             List<ChildData> childDataList = new ArrayList<>();
@@ -70,10 +77,14 @@ public abstract class AbstractCurdApiImpl {
         }
     }
 
+    /**
+     * 返回path的信息，转化为ChildData格式
+     * @param path
+     * @return
+     */
     protected ChildData getData(String path) {
         try {
-            ChildData childData = new ChildData(path, EMPTY_STAT, client.getData().forPath(path));
-            return childData;
+            return new ChildData(path, EMPTY_STAT, client.getData().forPath(path));
         } catch (Exception e) {
             throw new NiubiException(e);
         }

@@ -36,6 +36,10 @@ public class MasterSlaveJobApiImpl extends AbstractCurdApiImpl implements Master
         super(client);
     }
 
+    /**
+     * 获取所有的job 转化为MasterSlaveJobData格式
+     * @return
+     */
     @Override
     public List<MasterSlaveJobData> getAllJobs() {
         List<ChildData> childDataList = getChildren(getMasterSlavePathApi().getJobPath());
@@ -43,11 +47,20 @@ public class MasterSlaveJobApiImpl extends AbstractCurdApiImpl implements Master
         return masterSlaveJobDataList;
     }
 
+    /**
+     * 将该job保存到zookeeper的相应结点中
+     * @param group
+     * @param name
+     * @param data job的bytes数据
+     */
     @Override
     public void saveJob(String group, String name, MasterSlaveJobData.Data data) {
         data.prepareOperation();
+        // 拼接path，组装成MasterSlaveJobData
         MasterSlaveJobData masterSlaveJobData = new MasterSlaveJobData(PathHelper.getJobPath(getMasterSlavePathApi().getJobPath(), group, name), data);
+        // 提升一个版本号
         masterSlaveJobData.getData().incrementVersion();
+        // 如果结点存在就设置data，不存在则创建结点
         if (checkExists(masterSlaveJobData.getPath())) {
             setData(masterSlaveJobData.getPath(), masterSlaveJobData.getDataBytes());
         } else {
@@ -62,6 +75,12 @@ public class MasterSlaveJobApiImpl extends AbstractCurdApiImpl implements Master
         setData(masterSlaveJobData.getPath(), masterSlaveJobData.getDataBytes());
     }
 
+    /**
+     * 根据group和name 拼接path，然后获取job
+     * @param group
+     * @param name
+     * @return
+     */
     @Override
     public MasterSlaveJobData getJob(String group, String name) {
         return getJob(PathHelper.getJobPath(getMasterSlavePathApi().getJobPath(), group, name));

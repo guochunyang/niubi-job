@@ -35,22 +35,38 @@ public class MasterSlaveNodeApiImpl extends AbstractCurdApiImpl implements Maste
         super(client);
     }
 
+    /**
+     * 获取所有的Node，并转化为MasterSlaveNodeData
+     * @return
+     */
     @Override
     public List<MasterSlaveNodeData> getAllNodes() {
+        /**
+         * 获取nodepath  获取的一定是 /node/child
+         * 此时计算其父节点,得到/child
+         * 因为node结点建立的是临时结点,所以它们的path 一定是 /node/child-xxxxxx
+         * 所以这里获取 /child 即可
+         */
         List<ChildData> childDataList = getChildren(PathHelper.getParentPath(getMasterSlavePathApi().getNodePath()));
-        List<MasterSlaveNodeData> masterSlaveNodeDataList = childDataList.stream().map(MasterSlaveNodeData::new).collect(Collectors.toList());
-        return masterSlaveNodeDataList;
+        return childDataList.stream().map(MasterSlaveNodeData::new).collect(Collectors.toList());
     }
 
+    /**
+     * 保存node结点到zookeeper 这里创建的结点为临时结点
+     * @param data
+     * @return
+     */
     @Override
     public String saveNode(MasterSlaveNodeData.Data data) {
         MasterSlaveNodeData masterSlaveNodeData = new MasterSlaveNodeData(getMasterSlavePathApi().getNodePath(), data);
+        // 注意这里创建的是有序的临时结点
         return createEphemeralSequential(masterSlaveNodeData.getPath(), masterSlaveNodeData.getDataBytes());
     }
 
     @Override
     public void updateNode(String path, MasterSlaveNodeData.Data data) {
         MasterSlaveNodeData masterSlaveNodeData = new MasterSlaveNodeData(path, data);
+        // 是否应该检查path是否存在
         setData(masterSlaveNodeData.getPath(), masterSlaveNodeData.getDataBytes());
     }
 
